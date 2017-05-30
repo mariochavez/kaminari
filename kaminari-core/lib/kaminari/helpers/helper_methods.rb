@@ -98,16 +98,17 @@ module Kaminari
       #   <%= page_entries_info @posts, entry_name: 'item' %>
       #   #-> Displaying items 6 - 10 of 26 in total
       def page_entries_info(collection, entry_name: nil)
+        collection_size = [collection.offset_value + collection.limit_value, collection.total_count].min
         entry_name = if entry_name
-                       entry_name.pluralize(collection.size)
+                       entry_name.pluralize(collection_size)
                      else
-                       collection.entry_name(count: collection.size).downcase
+                       collection.entry_name(count: collection_size).downcase
                      end
 
         if collection.total_pages < 2
           t('helpers.page_entries_info.one_page.display_entries', entry_name: entry_name, count: collection.total_count)
         else
-          t('helpers.page_entries_info.more_pages.display_entries', entry_name: entry_name, first: collection.offset_value + 1, last: [collection.offset_value + collection.limit_value, collection.total_count].min, total: collection.total_count)
+          t('helpers.page_entries_info.more_pages.display_entries', entry_name: entry_name, first: collection.offset_value + 1, last: collection_size, total: collection.total_count)
         end.html_safe
       end
 
